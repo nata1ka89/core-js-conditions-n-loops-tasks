@@ -319,8 +319,23 @@ function getBalanceIndex(arr) {
  *          [10, 9,  8,  7]
  *        ]
  */
-function getSpiralMatrix(/* size */) {
-  throw new Error('Not implemented');
+function getSpiralMatrix(size) {
+  let step = size - 1;
+  const array = [];
+  let x = 0;
+  let y = 0;
+  for (let i = 0; i < size; i += 1) array[i] = [];
+
+  for (let i = 1; i <= size ** 2; i += 1) {
+    array[x][y] = i;
+    if (x === step && y === size - step - 1) step -= 1;
+
+    if ((y >= x && y < step) || (x - 1 === y && x === size - step - 1)) y += 1;
+    else if (x <= y && x < step) x += 1;
+    else if (y <= x && y >= size - step) y -= 1;
+    else if (x >= y && x >= size - step) x -= 1;
+  }
+  return array;
 }
 
 /**
@@ -338,8 +353,28 @@ function getSpiralMatrix(/* size */) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix(/* matrix */) {
-  throw new Error('Not implemented');
+function rotateMatrix(matrix) {
+  const newMatrix = [];
+  const currentMatrix = matrix;
+  let lastIndex;
+  let i;
+  let j;
+
+  for (i = 0; i < matrix.length; i += 1) {
+    newMatrix[i] = [];
+    lastIndex = matrix[i].length - 1;
+    for (j = lastIndex; j >= 0; j -= 1) {
+      newMatrix[i][lastIndex - j] = matrix[j][i];
+    }
+  }
+
+  for (i = 0; i < newMatrix.length; i += 1) {
+    for (j = 0; j < newMatrix[i].length; j += 1) {
+      currentMatrix[i][j] = newMatrix[i][j];
+    }
+  }
+
+  return currentMatrix;
 }
 
 /**
@@ -356,8 +391,28 @@ function rotateMatrix(/* matrix */) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+
+function partition(arr, left, right) {
+  const cloneArr = arr;
+  const pivot = cloneArr[right];
+  let i = left;
+  for (let j = left; j < right; j += 1) {
+    if (cloneArr[j] < pivot) {
+      [cloneArr[i], cloneArr[j]] = [cloneArr[j], cloneArr[i]];
+      i += 1;
+    }
+  }
+  [cloneArr[i], cloneArr[right]] = [cloneArr[right], cloneArr[i]];
+  return i;
+}
+function sortByAsc(arr, left = 0, right = arr.length - 1) {
+  const cloneArr = arr;
+  if (left < right) {
+    const pivotIndex = partition(cloneArr, left, right);
+    sortByAsc(cloneArr, left, pivotIndex - 1);
+    sortByAsc(cloneArr, pivotIndex + 1, right);
+  }
+  return cloneArr;
 }
 
 /**
@@ -377,8 +432,18 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  let clStr = str;
+  let step = iterations % (str.length - 2);
+  if (iterations > 100) step *= 5;
+  for (let stp = 0; stp < step; stp += 1) {
+    for (let i = 1; i < clStr.length / 2 + 1; i += 1) {
+      const curI = clStr[i];
+      clStr = clStr.substring(0, i) + clStr.substring(i + 1, str.length);
+      clStr += curI;
+    }
+  }
+  return clStr;
 }
 
 /**
@@ -398,8 +463,39 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const digArr = [];
+  let cloneNumber = number;
+  while (cloneNumber > 0) {
+    digArr.unshift(cloneNumber % 10);
+    cloneNumber = Math.floor(cloneNumber / 10);
+  }
+
+  let minDigPos = digArr.length - 2;
+  while (minDigPos >= 0 && digArr[minDigPos] >= digArr[minDigPos + 1]) {
+    minDigPos -= 1;
+  }
+
+  if (minDigPos === -1) return number;
+
+  let maxDigPos = digArr.length - 1;
+  while (digArr[maxDigPos] <= digArr[minDigPos]) {
+    maxDigPos -= 1;
+  }
+
+  const temp = digArr[minDigPos];
+  digArr[minDigPos] = digArr[maxDigPos];
+  digArr[maxDigPos] = temp;
+
+  const tailReverse = digArr.splice(minDigPos + 1).reverse();
+  digArr.push(...tailReverse);
+
+  let result = 0;
+  for (let k = 0; k < digArr.length; k += 1) {
+    result = result * 10 + digArr[k];
+  }
+
+  return result;
 }
 
 module.exports = {
